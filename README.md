@@ -1,2 +1,2 @@
-# sadetind.github.io
+# Sadetind.github.io
 # "Hello World!"
