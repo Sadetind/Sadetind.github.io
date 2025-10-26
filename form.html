@@ -101,7 +101,11 @@
                 
                 <button type="submit" class="btn btn-primary btn-register mt-3">Register</button>
             </form>
-            
+            <div id="resultContainer" class="result-container">
+                <h3 id="resultTitle" class="mb-3"></h3>
+                <div id="userInfo"></div>
+                <button id="backButton" class="btn btn-secondary mt-3">Back to Registration</button>
+            </div>
         </div>
     </div>
 
@@ -192,6 +196,12 @@
             
             // Scroll to results
             document.getElementById('resultContainer').scrollIntoView({ behavior: 'smooth' });
+        });
+        
+        // Event listener for back button
+        document.getElementById('backButton').addEventListener('click', function() {
+            document.getElementById('resultContainer').style.display = 'none';
+            document.getElementById('registrationForm').reset();
         });
     </script>
 </body>
