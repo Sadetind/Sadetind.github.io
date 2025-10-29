@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cat Facts</title>
+</head>
+<body>
+    <h1>Cat Facts</h1>
+    
+    <img id="catPhoto" src="cat.jpg" alt="Cat">
+    
+    <button onclick="fetchCatData()">Get Cat Facts</button>
+    
+    <table border="1" id="factsTable">
+        <tr>
+            <th>factId</th>
+            <th>fact</th>
+        </tr>
+    </table>
+
+    <script>
+        async function fetchCatData() {
+            const url = 'https://brianobruno.github.io/cats.json';
+            const options = {
+                method: 'GET',
+            };
+            
+            try {
+                const response = await fetch(url, options);
+                const result = await response.text();
+                const data = JSON.parse(result);
+            
+                document.getElementById('catPhoto').src = data.catPictureUrl;
+                
+                const sortedFacts = data.facts.sort((a, b) => a.factId - b.factId);
+ 
+                const table = document.getElementById('factsTable');
+                while(table.rows.length > 1) {
+                    table.deleteRow(1);
+                }
+
+                sortedFacts.forEach(fact => {
+                    const row = table.insertRow();
+                    row.insertCell(0).textContent = fact.factId;
+                    row.insertCell(1).textContent = fact.text;
+                });
+                
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</body>
+</html>
