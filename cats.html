@@ -6,7 +6,7 @@
 <body>
     <h1>Cat Facts</h1>
     
-    <img id="catPhoto" src="cat.jpg" alt="Cat">
+    <img id="catImage" src="cat.jpg" alt="Cat">
     
     <button onclick="fetchCatData()">Get Cat Facts</button>
     
@@ -24,25 +24,32 @@
                 method: 'GET',
             };
             
-            try {
-                const response = await fetch(url, options);
+            const response = await fetch(url, options);
+            
+            if (response.ok) {
                 const result = await response.text();
                 const data = JSON.parse(result);
-            
-                document.getElementById('catPhoto').src = data.catPhoto;
-                
-                const sortedFacts = data.facts.sort((a, b) => a.factId - b.factId);
- 
-                const table = document.getElementById('factsTable');
-                while(table.rows.length > 1) {
-                    table.deleteRow(1);
-                }
+                updatePage(data);
+            } else {
+                console.error('Error:', response.status);
+            }
+        }
 
-                sortedFacts.forEach(fact => {
-                    const row = table.insertRow();
-                    row.insertCell(0).textContent = fact.factId;
-                    row.insertCell(1).textContent = fact.text;
-                });
+        function updatePage(data) {
+            document.getElementById('catImage').src = data.catPhoto;
+            
+            const sortedFacts = data.facts.sort((a, b) => a.factId - b.factId);
+
+            const table = document.getElementById('factsTable');
+            while(table.rows.length > 1) {
+                table.deleteRow(1);
+            }
+
+            sortedFacts.forEach(fact => {
+                const row = table.insertRow();
+                row.insertCell(0).textContent = fact.factId;
+                row.insertCell(1).textContent = fact.text;
+            });
         }
     </script>
 </body>
