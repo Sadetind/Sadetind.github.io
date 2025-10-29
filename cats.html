@@ -29,7 +29,7 @@
                 const result = await response.text();
                 const data = JSON.parse(result);
             
-                document.getElementById('catPhoto').src = data.catPictureUrl;
+                document.getElementById('catPhoto').src = data.catPhoto;
                 
                 const sortedFacts = data.facts.sort((a, b) => a.factId - b.factId);
  
