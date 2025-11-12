@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Lab 3 - Responsive Design</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        
+        .jumbo {
+            background: #f3b9b9;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="jumbo">
+        <h1>State</h1>
+        <h2>Sub Header</h2>
+    </div>
+    
+    <p>
+        <a href="index.html">Homepage</a> | 
+        <a href="lab3.html">Lab 3</a>
+    </p>
+    
+    <p>Wow Look at this breadboard image again!</p>
+    
+    <div class="grid">
+        <div>
+            <h3>The breadboard has:</h3>
+            <ul>
+                <li>Wires</li>
+                <li>Switches</li>
+                <li>Lights</li>
+            </ul>
+        </div>
+        
+        <div>
+            <img src="breadboard.jpg" alt="Sample image" width="300" height="200">
+        </div>
+    </div>
+    
+    <hr>
+        <p> Nov/11/2025| Sadetin Dodic</p>
+</hr>
+</body>
+</html>
