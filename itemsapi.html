@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Deadlock Api</title>
+    <style>
+        body {
+            background-image: url('deadlockitem.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            margin: 0;
+            min-height: 100vh;
+        }
+        
+        .title {
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .title img {
+            max-width: 300px; 
+            height: auto;
+            display: block;
+            margin: 0 auto 20px;
+        }
+        
+        .title p {
+            font-size: 20px;
+            margin-bottom: 50px;
+        }
+        
+        .image-links {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .image-link {
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .image-link:hover {
+            transform: scale(1.05);
+        }
+        
+        .image-link img {
+            width: 200px; 
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+        }
+        
+        .image-link p {
+            color: white;
+            margin-top: 10px;
+            font-size: 18px;
+        }
+        
+        
+        .image-link {
+            background-color: rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            border-radius: 10px;
+        }
+    </style>
+    </style>
+</head>
+<body>
+    <div class="title">
+        <a href="mainpagedeadlock.html" target="_blank">
+            <img src="deadlocklogo.png" 
+                 alt="Deadlock Logo" 
+                 title="Click to visit main">
+        </a>
+        <p>Api website</p>
+        
+        <!-- Two clickable images below the title -->
+        <div class="image-links">
+            <!-- Item Link -->
+            <div class="image-link">
+                <a href="itemsapi.html" target="_blank">
+                    <img src="items.png" 
+                         alt="Items" 
+                         title="Click for Item Page">
+                </a>
+                <p>Items</p>
+            </div>
+            
+            <!-- Hero Link -->
+            <div class="image-link">
+                <a href="heroapi.html" target="_blank">
+                    <img src="heros.png" 
+                         alt="Heros" 
+                         title="Click for Hero Page">
+                </a>
+                <p>Heros</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
