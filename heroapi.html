@@ -1,48 +1,163 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Deadlock Api</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deadlock Hero Viewer</title>
     <style>
-        body {
-            background-image: url('deadlockbackground.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            margin: 0;
-            min-height: 100vh;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: #1a2a3a; color: #f0f0f0; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
         
-        .title {
-            color: white;
-            text-align: center;
-            padding: 30px;
-        }
+        .selector-section { background: rgba(30, 40, 60, 0.8); padding: 20px; border-radius: 10px; margin-bottom: 30px; }
+        #categorySelect { padding: 12px; width: 300px; background: #1e2a40; color: white; border: 2px solid #4a5a9a; border-radius: 8px; }
         
-        .title img {
-            max-width: 300px; 
-            height: auto;
-            display: block;
-            margin: 0 auto 20px;
-        }
+        .main-display { background: rgba(30, 40, 60, 0.8); padding: 30px; border-radius: 10px; margin-bottom: 30px; }
+        .main-image { width: 100%; max-width: 700px; height: 400px; object-fit: cover; border-radius: 10px; }
         
-        .title p {
-            font-size: 20px;
-            margin-bottom: 50px;
-        }
-    </style>
+        .loading, .error { text-align: center; padding: 40px; display: none; }
     </style>
 </head>
 <body>
-    <div class="title">
-        <a href="mainpagedeadlock.html">
-            <img src="deadlocklogo.png" 
-                 alt="Deadlock Logo" 
-                 title="Click to visit main">
-        </a>
-        <p>Api website</p>
+    <div class="container">
+        <header>
+            <h1>Select your Hero</h1>
+        </header>
+        
+        <section class="selector-section">
+            <label for="categorySelect">Select Hero:</label>
+            <select id="categorySelect">
+                <option value="">Loading Heros...</option>
+            </select>
+        </section>
+        
+        <section class="main-display">
+            <div id="loadingIndicator" class="loading">
+                Loading...
             </div>
-        </div>
+            <div id="errorMessage" class="error">
+                Error loading data
+            </div>
+            <div id="mainContent" style="display: none;">
+                <img id="mainImage" class="main-image" src="" alt="Main Image">
+                <div id="mainText" style="margin-top: 20px; font-size: 1.2rem;"></div>
+            </div>
+        </section>
+            </div>
+        </section>
     </div>
+
+    <script>
+        // ============================================
+        // REPLACE THESE WITH YOUR ACTUAL API ENDPOINTS
+        // ============================================
+        const API_ENDPOINTS = {
+            // Endpoint to fetch list of categories for the dropdown
+            GET_CATEGORIES: 'https://assets.deadlock-api.com/v2/heroes?language=english&client_version=6016&only_active=true',
+            
+            // Endpoint to fetch details for a specific category
+            // Use :categoryId as a placeholder for the selected category
+            GET_CATEGORY_DETAILS: 'https://assets.deadlock-api.com/v2/heroes?language=english&client_version=6016&only_active=true'
+        };
+        
+        // DOM Elements
+        const categorySelect = document.getElementById('categorySelect');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const errorMessage = document.getElementById('errorMessage');
+        const mainContent = document.getElementById('mainContent');
+        const mainImage = document.getElementById('mainimage');
+        const mainText = document.getElementById('mainText');
+
+        // Fetch categories and populate dropdown on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            await fetchCategories();
+        });
+
+        // Event listener for dropdown selection
+        categorySelect.addEventListener('change', async function() {
+            const selectedCategory = this.value;
+            if (selectedCategory) {
+                await fetchCategoryDetails(selectedCategory);
+            }
+        });
+        
+        // ============================================
+        // 1. FUNCTION TO FETCH CATEGORIES FOR DROPDOWN
+        // ============================================
+        async function fetchCategories() {
+            try {
+                showLoading();
+                
+                const response = await fetch(/v2/heroes);
+
+                categories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category.id; // Use category.id or category.slug
+                    option.textContent = category.name; // Use category.name or category.title
+                    categorySelect.appendChild(option);
+                });
+                
+                hideLoading();
+                
+                if (categories.length > 0) {
+                    categorySelect.value = categories[0].id;
+                    await fetchCategoryDetails(categories[0].id);
+                }
+                
+            } catch (error) {
+                console.error('Error fetching heros:', error);
+                showError('Failed to load heros. Please try again.');
+            }
+        }
+
+        // ============================================
+        // 2. FUNCTION TO FETCH CATEGORY DETAILS
+        // ============================================
+        async function fetchCategoryDetails(categoryId) {
+            try {
+                showLoading();
+                
+
+                const endpoint = /v2/heroes(':categoryId', categoryId);
+                const response = await fetch(endpoint);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                
+                const categoryData = await response.json();
+                
+
+                mainImage.src = categoryData.top_bar_image; 
+                mainText.textContent = categoryData.lore;
+
+                hideLoading();
+                mainContent.style.display = 'block';
+                errorMessage.style.display = 'none';
+                
+            } catch (error) {
+                console.error('Error fetching category details:', error);
+                showError('Failed to load category details. Please try again.');
+            }
+        }
+
+        // Helper functions
+        function showLoading() {
+            loadingIndicator.style.display = 'block';
+            errorMessage.style.display = 'none';
+            mainContent.style.display = 'none';
+        }
+        
+        function hideLoading() {
+            loadingIndicator.style.display = 'none';
+        }
+        
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            loadingIndicator.style.display = 'none';
+            mainContent.style.display = 'none';
+        }
+    </script>
 </body>
 </html>
