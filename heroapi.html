@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Deadlock Hero Lore</title>
     <style>
-      body {
+        body {
             background-image: url('deadlockbackground.png');
             background-size: cover;
             background-position: center;
@@ -29,14 +29,16 @@
             display: block;
             margin: 0 auto 20px;
         }
-           header img {
+        
+        header img {
             max-width: 300px; 
             height: auto;
             display: block;
             margin: 0 auto 20px;
         }
+        
         header p {
-             color: rgb(97, 182, 104);
+            color: rgb(97, 182, 104);
             font-size: 20px;
             margin-bottom: 50px;
         }
@@ -150,24 +152,24 @@
         .role-playstyle p {
             color: white;
             line-height: 1.5;
-        } 
-
+        }
     </style>
 </head>
-<body>
+<body onload="initializePage()">
     <div class="container">
         <header>
-<a href="mainpagedeadlock.html">
-            <img src="deadlocklogo.png" 
-                 alt="Deadlock Logo" 
-                 title="Click to visit main">
-        </a>
+            <a href="mainpagedeadlock.html">
+                <img src="deadlocklogo.png" 
+                     alt="Deadlock Logo" 
+                     title="Click to visit main">
+            </a>
             <p>Select a hero to read their backstory</p>
         </header>
         
         <section class="selector-section">
             <label for="categorySelect">Choose a Hero:</label>
-            <select id="categorySelect">
+            <select id="categorySelect" onchange="handleHeroSelect()">
+                <option value="" disabled selected>Loading heroes...</option>
             </select>
         </section>
         
@@ -195,25 +197,20 @@
     <script>
         const HEROES_API = 'https://assets.deadlock-api.com/v2/heroes?language=english&client_version=6016&only_active=true';
         
-        const categorySelect = document.getElementById('categorySelect');
-        const mainContent = document.getElementById('mainContent');
-        const mainImage = document.getElementById('mainImage');
-        const heroName = document.getElementById('heroName');
-        const loreText = document.getElementById('loreText');
-        const rolePlaystyle = document.getElementById('rolePlaystyle');
-
         let allHeroesData = [];
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            await fetchHeroes();
-        });
+        function initializePage() {
+            fetchHeroes();
+        }
 
-        categorySelect.addEventListener('change', async function() {
-            const selectedHeroId = this.value;
+        function handleHeroSelect() {
+            const categorySelect = document.getElementById('categorySelect');
+            const selectedHeroId = categorySelect.value;
+            
             if (selectedHeroId) {
-                await fetchHeroDetails(selectedHeroId);
+                fetchHeroDetails(selectedHeroId);
             }
-        });
+        }
         
         async function fetchHeroes() {
             try {
@@ -221,6 +218,7 @@
                 const data = await response.json();
                 allHeroesData = data;
                 
+                const categorySelect = document.getElementById('categorySelect');
                 categorySelect.innerHTML = '<option value="" disabled selected>Select a hero...</option>';
                 
                 data.forEach(hero => {
@@ -232,22 +230,28 @@
                 
                 if (data.length > 0) {
                     categorySelect.value = data[0].id;
-                    await fetchHeroDetails(data[0].id);
+                    fetchHeroDetails(data[0].id);
                 }
-            } catch (error) {}
+            } catch (error) {
+                console.error('Error fetching heroes:', error);
+            }
         }
 
-        async function fetchHeroDetails(heroId) {
-            try {
-                const hero = allHeroesData.find(h => h.id.toString() === heroId.toString());
-                
-                if (!hero) return;
-                
-                displayHeroLore(hero);
-            } catch (error) {}
+        function fetchHeroDetails(heroId) {
+            const hero = allHeroesData.find(h => h.id.toString() === heroId.toString());
+            
+            if (!hero) return;
+            
+            displayHeroLore(hero);
         }
 
         function displayHeroLore(hero) {
+            const mainContent = document.getElementById('mainContent');
+            const mainImage = document.getElementById('mainImage');
+            const heroName = document.getElementById('heroName');
+            const loreText = document.getElementById('loreText');
+            const rolePlaystyle = document.getElementById('rolePlaystyle');
+            
             const lore = hero.description?.lore || 'No lore available for this hero.';
             const role = hero.description?.role || '';
             const playstyle = hero.description?.playstyle || '';

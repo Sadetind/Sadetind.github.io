@@ -148,7 +148,7 @@
         
         <section class="filter-section">
             <label for="typeSelect">Filter by Item Type:</label>
-            <select id="typeSelect">
+            <select id="typeSelect" onchange="loadItems()">
                 <option value="weapon">Weapon Items</option>
                 <option value="spirit">Spirit Items</option>
                 <option value="vitality">Vitality Items</option>
@@ -163,16 +163,6 @@
     <script>
         const ITEMS_API = (type) => `https://assets.deadlock-api.com/v2/items/by-slot-type/${type}?language=english&client_version=6016`;
         
-        const typeSelect = document.getElementById('typeSelect');
-        const itemsContainer = document.getElementById('itemsContainer');
-
-        typeSelect.addEventListener('change', async function() {
-            const selectedType = this.value;
-            if (selectedType) {
-                await fetchItems(selectedType);
-            }
-        });
-
         function formatItemName(name) {
             if (!name) return '';
             
@@ -190,11 +180,15 @@
             return formatted;
         }
 
-        async function fetchItems(itemType) {
+        async function loadItems() {
+            const typeSelect = document.getElementById('typeSelect');
+            const itemsContainer = document.getElementById('itemsContainer');
+            const selectedType = typeSelect.value;
+            
             try {
                 itemsContainer.innerHTML = '<div style="text-align: center; padding: 40px; color: #9ab3ff;">Loading items...</div>';
                 
-                const response = await fetch(ITEMS_API(itemType));
+                const response = await fetch(ITEMS_API(selectedType));
                 const data = await response.json();
                 
                 displayItems(data);
@@ -204,6 +198,8 @@
         }
 
         function displayItems(items) {
+            const itemsContainer = document.getElementById('itemsContainer');
+            
             if (!items || items.length === 0) {
                 itemsContainer.innerHTML = '<div class="no-items">No items found</div>';
                 return;
@@ -230,9 +226,8 @@
             });
         }
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            await fetchItems('weapon');
-        });
+        // Load initial items when page loads
+        loadItems();
     </script>
 </body>
 </html>
