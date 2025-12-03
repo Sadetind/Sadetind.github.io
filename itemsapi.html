@@ -5,7 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Deadlock Items</title>
     <style>
-     body {
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: Arial, sans-serif; 
+        }
+        
+       body {
                 background-image: url('deadlockitem.png');
                 background-size: cover;
                 background-position: center;
@@ -104,20 +111,12 @@
             color: #6a9eff;
             word-wrap: break-word;
         }
-        
-        .no-items {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 40px;
-            color: #aaa;
-            font-style: italic;
-        }
     </style>
 </head>
-<body>
+<body onload="fetchItems('weapon')">
     <div class="container">
         <header>
-                  <a href="mainpagedeadlock.html">
+<a href="mainpagedeadlock.html">
             <img src="deadlocklogo.png" 
                  alt="Deadlock Logo" 
                  title="Click to visit main">
@@ -127,7 +126,7 @@
         
         <section class="filter-section">
             <label for="typeSelect">Filter by Item Type:</label>
-            <select id="typeSelect">
+            <select id="typeSelect" onchange="fetchItems(this.value)">
                 <option value="weapon">Weapon Items</option>
                 <option value="spirit">Spirit Items</option>
                 <option value="vitality">Vitality Items</option>
@@ -142,26 +141,11 @@
     <script>
         const ITEMS_API = (type) => `https://assets.deadlock-api.com/v2/items/by-slot-type/${type}?language=english&client_version=6016`;
         
-        const typeSelect = document.getElementById('typeSelect');
-        const itemsContainer = document.getElementById('itemsContainer');
-
-        typeSelect.addEventListener('change', async function() {
-            const selectedType = this.value;
-            if (selectedType) {
-                await fetchItems(selectedType);
-            }
-        });
-
         function formatItemName(name) {
             if (!name) return '';
             
-            // Remove "upgrade_" prefix if present
             let formatted = name.replace(/^upgrade_/i, '');
-            
-            // Replace underscores with spaces
             formatted = formatted.replace(/_/g, ' ');
-            
-            // Capitalize first letter of each word
             formatted = formatted.split(' ')
                 .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
                 .join(' ');
@@ -170,6 +154,8 @@
         }
 
         async function fetchItems(itemType) {
+            const itemsContainer = document.getElementById('itemsContainer');
+            
             try {
                 itemsContainer.innerHTML = '<div style="text-align: center; padding: 40px; color: #9ab3ff;">Loading items...</div>';
                 
@@ -178,13 +164,15 @@
                 
                 displayItems(data);
             } catch (error) {
-                itemsContainer.innerHTML = '<div class="no-items">Failed to load items</div>';
+                itemsContainer.innerHTML = '';
             }
         }
 
         function displayItems(items) {
+            const itemsContainer = document.getElementById('itemsContainer');
+            
             if (!items || items.length === 0) {
-                itemsContainer.innerHTML = '<div class="no-items">No items found</div>';
+                itemsContainer.innerHTML = '';
                 return;
             }
             
@@ -197,7 +185,6 @@
                 const imageUrl = item.image || item.image_webp || '';
                 const itemName = formatItemName(item.name || item.class_name || '');
                 
-                // Skip items with no name after formatting
                 if (!itemName) return;
                 
                 itemCard.innerHTML = `
@@ -208,10 +195,6 @@
                 itemsContainer.appendChild(itemCard);
             });
         }
-
-        document.addEventListener('DOMContentLoaded', async () => {
-            await fetchItems('weapon');
-        });
     </script>
 </body>
 </html>
