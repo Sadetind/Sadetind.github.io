@@ -27,7 +27,7 @@
         <section class="selector-section">
             <label for="categorySelect">Select Hero:</label>
             <select id="categorySelect">
-                <option value="">Loading Heros...</option>
+                <option value="">Loading Heroes...</option>
             </select>
         </section>
         
@@ -43,21 +43,16 @@
                 <div id="mainText" style="margin-top: 20px; font-size: 1.2rem;"></div>
             </div>
         </section>
-            </div>
-        </section>
     </div>
 
     <script>
-        // ============================================
-        // REPLACE THESE WITH YOUR ACTUAL API ENDPOINTS
-        // ============================================
+        // API Endpoints
         const API_ENDPOINTS = {
-            // Endpoint to fetch list of categories for the dropdown
-            GET_CATEGORIES: 'https://assets.deadlock-api.com/v2/heroes?language=english&client_version=6016&only_active=true',
+            // This endpoint returns ALL heroes
+            GET_HEROES: 'https://assets.deadlock-api.com/v2/heroes?language=english&client_version=6016&only_active=true',
             
-            // Endpoint to fetch details for a specific category
-            // Use :categoryId as a placeholder for the selected category
-            GET_CATEGORY_DETAILS: 'https://assets.deadlock-api.com/v2/heroes?language=english&client_version=6016&only_active=true'
+            // For individual hero details, use the hero_id parameter
+            GET_HERO_DETAILS: 'https://assets.deadlock-api.com/v2/heroes?language=english&client_version=6016&hero_id='
         };
         
         // DOM Elements
@@ -65,79 +60,119 @@
         const loadingIndicator = document.getElementById('loadingIndicator');
         const errorMessage = document.getElementById('errorMessage');
         const mainContent = document.getElementById('mainContent');
-        const mainImage = document.getElementById('mainimage');
+        const mainImage = document.getElementById('mainImage'); // Fixed typo: was 'mainimage'
         const mainText = document.getElementById('mainText');
 
-        // Fetch categories and populate dropdown on page load
+        // Fetch heroes and populate dropdown on page load
         document.addEventListener('DOMContentLoaded', async () => {
-            await fetchCategories();
+            await fetchHeroes();
         });
 
         // Event listener for dropdown selection
         categorySelect.addEventListener('change', async function() {
-            const selectedCategory = this.value;
-            if (selectedCategory) {
-                await fetchCategoryDetails(selectedCategory);
+            const selectedHeroId = this.value;
+            if (selectedHeroId) {
+                await fetchHeroDetails(selectedHeroId);
             }
         });
         
         // ============================================
-        // 1. FUNCTION TO FETCH CATEGORIES FOR DROPDOWN
+        // 1. FUNCTION TO FETCH HEROES FOR DROPDOWN
         // ============================================
-        async function fetchCategories() {
+        async function fetchHeroes() {
             try {
                 showLoading();
                 
-                const response = await fetch(/v2/heroes);
-
-                categories.forEach(category => {
-                    const option = document.createElement('option');
-                    option.value = category.id; // Use category.id or category.slug
-                    option.textContent = category.name; // Use category.name or category.title
-                    categorySelect.appendChild(option);
-                });
+                // Make the API call
+                const response = await fetch(API_ENDPOINTS.GET_HEROES);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                
+                // Parse the API response
+                const data = await response.json();
+                
+                // Check the actual response structure
+                console.log('API Response:', data);
+                
+                // Clear the dropdown
+                categorySelect.innerHTML = '<option value="" disabled selected>Select a hero...</option>';
+                
+                // Populate dropdown with heroes
+                // Adjust this based on the actual API response structure
+                if (data.heroes && Array.isArray(data.heroes)) {
+                    data.heroes.forEach(hero => {
+                        const option = document.createElement('option');
+                        option.value = hero.id; // Adjust property name based on API
+                        option.textContent = hero.name; // Adjust property name based on API
+                        categorySelect.appendChild(option);
+                    });
+                } else if (Array.isArray(data)) {
+                    // If API returns array directly
+                    data.forEach(hero => {
+                        const option = document.createElement('option');
+                        option.value = hero.id || hero.hero_id;
+                        option.textContent = hero.name || hero.display_name;
+                        categorySelect.appendChild(option);
+                    });
+                } else {
+                    throw new Error('Unexpected API response format');
+                }
                 
                 hideLoading();
                 
-                if (categories.length > 0) {
-                    categorySelect.value = categories[0].id;
-                    await fetchCategoryDetails(categories[0].id);
+                // Auto-select first hero if available
+                if (categorySelect.options.length > 1) {
+                    categorySelect.value = categorySelect.options[1].value;
+                    await fetchHeroDetails(categorySelect.value);
                 }
                 
             } catch (error) {
-                console.error('Error fetching heros:', error);
-                showError('Failed to load heros. Please try again.');
+                console.error('Error fetching heroes:', error);
+                showError('Failed to load heroes. Please try again.');
             }
         }
 
         // ============================================
-        // 2. FUNCTION TO FETCH CATEGORY DETAILS
+        // 2. FUNCTION TO FETCH HERO DETAILS
         // ============================================
-        async function fetchCategoryDetails(categoryId) {
+        async function fetchHeroDetails(heroId) {
             try {
                 showLoading();
                 
-
-                const endpoint = /v2/heroes(':categoryId', categoryId);
+                // Construct the API endpoint with hero ID
+                const endpoint = API_ENDPOINTS.GET_HERO_DETAILS + heroId;
                 const response = await fetch(endpoint);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 
-                const categoryData = await response.json();
+                const heroData = await response.json();
+                console.log('Hero Details:', heroData);
                 
-
-                mainImage.src = categoryData.top_bar_image; 
-                mainText.textContent = categoryData.lore;
+                // Update the display with hero data
+                // Adjust these property names based on the actual API response
+                if (heroData.heroes && heroData.heroes[0]) {
+                    const hero = heroData.heroes[0];
+                    mainImage.src = hero.top_bar_image || hero.image || '';
+                    mainText.textContent = hero.lore || hero.description || 'No description available.';
+                } else if (Array.isArray(heroData) && heroData[0]) {
+                    const hero = heroData[0];
+                    mainImage.src = hero.top_bar_image || hero.image || '';
+                    mainText.textContent = hero.lore || hero.description || 'No description available.';
+                } else {
+                    throw new Error('Hero data not found in response');
+                }
 
                 hideLoading();
                 mainContent.style.display = 'block';
                 errorMessage.style.display = 'none';
                 
             } catch (error) {
-                console.error('Error fetching category details:', error);
-                showError('Failed to load category details. Please try again.');
+                console.error('Error fetching hero details:', error);
+                showError('Failed to load hero details. Please try again.');
             }
         }
 
