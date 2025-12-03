@@ -1,48 +1,217 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Deadlock Api</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deadlock Items</title>
     <style>
-        body {
-            background-image: url('deadlockitem.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            margin: 0;
-            min-height: 100vh;
+     body {
+                background-image: url('deadlockitem.png');
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+                margin: 0;
+                min-height: 100vh;
+            }
+        
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            padding: 20px;
         }
         
-        .title {
-            color: white;
+        header {
             text-align: center;
-            padding: 30px;
+            margin-bottom: 20px;
+            padding: 20px;
         }
         
-        .title img {
-            max-width: 300px; 
-            height: auto;
+        h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            color: #6a9eff;
+        }
+        
+        .subtitle {
+            font-size: 18px;
+            color: #aaa;
+            margin-bottom: 10px;
+        }
+        
+        .filter-section { 
+            background: rgba(30, 40, 60, 0.8); 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        label {
+            font-size: 18px;
+            color: #9ab3ff;
             display: block;
-            margin: 0 auto 20px;
+            margin-bottom: 10px;
         }
         
-        .title p {
-            font-size: 20px;
-            margin-bottom: 50px;
+        #typeSelect { 
+            padding: 10px; 
+            width: 100%; 
+            max-width: 400px;
+            background: #1e2a40; 
+            color: white; 
+            border: 2px solid #4a5a9a; 
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
         }
-    </style>
+        
+        .items-container { 
+            background: rgba(30, 40, 60, 0.8); 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            justify-items: center;
+        }
+        
+        .item-card {
+            background: rgba(20, 30, 50, 0.6);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #4a5a9a;
+            width: 100%;
+            max-width: 150px;
+            text-align: center;
+        }
+        
+        .item-icon {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            border-radius: 6px;
+            background: #0d1825;
+            border: 1px solid #4a5a9a;
+            margin-bottom: 10px;
+        }
+        
+        .item-name {
+            font-size: 16px;
+            color: #6a9eff;
+            word-wrap: break-word;
+        }
+        
+        .no-items {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            color: #aaa;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
-    <div class="title">
-        <a href="mainpagedeadlock.html">
+    <div class="container">
+        <header>
+                  <a href="mainpagedeadlock.html">
             <img src="deadlocklogo.png" 
                  alt="Deadlock Logo" 
                  title="Click to visit main">
         </a>
-        <p>Api website</p>
-            </div>
-        </div>
+            <p class="subtitle">Browse game items by type</p>
+        </header>
+        
+        <section class="filter-section">
+            <label for="typeSelect">Filter by Item Type:</label>
+            <select id="typeSelect">
+                <option value="weapon">Weapon Items</option>
+                <option value="spirit">Spirit Items</option>
+                <option value="vitality">Vitality Items</option>
+            </select>
+        </section>
+        
+        <section class="items-container" id="itemsContainer">
+            <div style="text-align: center; padding: 40px; color: #9ab3ff;">Loading items...</div>
+        </section>
     </div>
+
+    <script>
+        const ITEMS_API = (type) => `https://assets.deadlock-api.com/v2/items/by-slot-type/${type}?language=english&client_version=6016`;
+        
+        const typeSelect = document.getElementById('typeSelect');
+        const itemsContainer = document.getElementById('itemsContainer');
+
+        typeSelect.addEventListener('change', async function() {
+            const selectedType = this.value;
+            if (selectedType) {
+                await fetchItems(selectedType);
+            }
+        });
+
+        function formatItemName(name) {
+            if (!name) return '';
+            
+            // Remove "upgrade_" prefix if present
+            let formatted = name.replace(/^upgrade_/i, '');
+            
+            // Replace underscores with spaces
+            formatted = formatted.replace(/_/g, ' ');
+            
+            // Capitalize first letter of each word
+            formatted = formatted.split(' ')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                .join(' ');
+            
+            return formatted;
+        }
+
+        async function fetchItems(itemType) {
+            try {
+                itemsContainer.innerHTML = '<div style="text-align: center; padding: 40px; color: #9ab3ff;">Loading items...</div>';
+                
+                const response = await fetch(ITEMS_API(itemType));
+                const data = await response.json();
+                
+                displayItems(data);
+            } catch (error) {
+                itemsContainer.innerHTML = '<div class="no-items">Failed to load items</div>';
+            }
+        }
+
+        function displayItems(items) {
+            if (!items || items.length === 0) {
+                itemsContainer.innerHTML = '<div class="no-items">No items found</div>';
+                return;
+            }
+            
+            itemsContainer.innerHTML = '';
+            
+            items.forEach(item => {
+                const itemCard = document.createElement('div');
+                itemCard.className = 'item-card';
+                
+                const imageUrl = item.image || item.image_webp || '';
+                const itemName = formatItemName(item.name || item.class_name || '');
+                
+                // Skip items with no name after formatting
+                if (!itemName) return;
+                
+                itemCard.innerHTML = `
+                    ${imageUrl ? `<img src="${imageUrl}" alt="${itemName}" class="item-icon">` : ''}
+                    <div class="item-name">${itemName}</div>
+                `;
+                
+                itemsContainer.appendChild(itemCard);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await fetchItems('weapon');
+        });
+    </script>
 </body>
 </html>
