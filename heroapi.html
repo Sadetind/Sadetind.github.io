@@ -3,72 +3,209 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deadlock Hero Viewer</title>
+    <title>Deadlock Hero Lore</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #1a2a3a; color: #f0f0f0; padding: 20px; }
-        .container { max-width: 1200px; margin: 0 auto; }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: Arial, sans-serif; 
+        }
         
-        .selector-section { background: rgba(30, 40, 60, 0.8); padding: 20px; border-radius: 10px; margin-bottom: 30px; }
-        #categorySelect { padding: 12px; width: 300px; background: #1e2a40; color: white; border: 2px solid #4a5a9a; border-radius: 8px; }
+        body { 
+            background-image: url('deadlockbackground');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white; 
+            min-height: 100vh;
+            padding: 20px;
+            background-color: #1a1a2e;
+        }
         
-        .main-display { background: rgba(30, 40, 60, 0.8); padding: 30px; border-radius: 10px; margin-bottom: 30px; }
-        .main-image { width: 100%; max-width: 700px; height: 400px; object-fit: cover; border-radius: 10px; }
+        .container { 
+            max-width: 1000px; 
+            margin: 0 auto; 
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            padding: 20px;
+        }
         
-        .loading, .error { text-align: center; padding: 40px; display: none; }
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+        
+        h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            color: #6a9eff;
+        }
+        
+        .subtitle {
+            font-size: 18px;
+            color: #aaa;
+            margin-bottom: 10px;
+        }
+        
+        .selector-section { 
+            background: rgba(30, 40, 60, 0.8); 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        label {
+            font-size: 18px;
+            color: #9ab3ff;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        #categorySelect { 
+            padding: 10px; 
+            width: 100%; 
+            max-width: 400px;
+            background: #1e2a40; 
+            color: white; 
+            border: 2px solid #4a5a9a; 
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        .main-display { 
+            background: rgba(30, 40, 60, 0.8); 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin-bottom: 20px;
+        }
+        
+        .hero-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .hero-image-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .main-image { 
+            width: 100%; 
+            max-width: 400px; 
+            height: 300px; 
+            object-fit: contain; 
+            border-radius: 8px; 
+            background: #0d1825;
+            border: 1px solid #4a5a9a;
+        }
+        
+        .hero-name {
+            font-size: 24px;
+            color: #6a9eff;
+            margin-top: 10px;
+            text-align: center;
+        }
+        
+        .hero-lore-container {
+            flex: 1;
+        }
+        
+        .hero-lore {
+            background: rgba(20, 30, 50, 0.6);
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .hero-lore h3 {
+            color: #5579e2;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .lore-text {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #e0e0e0;
+            margin-bottom: 20px;
+        }
+        
+        .role-playstyle {
+            background: rgba(106, 158, 255, 0.1);
+            padding: 15px;
+            border-radius: 6px;
+        }
+        
+        .role-playstyle h4 {
+            color: #9affbc;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .role-playstyle p {
+            color: white;
+            line-height: 1.5;
+        } 
+
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Select your Hero</h1>
+            <h1>Deadlock Hero Lore</h1>
+            <p class="subtitle">Select a hero to read their backstory</p>
         </header>
         
         <section class="selector-section">
-            <label for="categorySelect">Select Hero:</label>
+            <label for="categorySelect">Choose a Hero:</label>
             <select id="categorySelect">
-                <option value="">Loading Heroes...</option>
             </select>
         </section>
         
         <section class="main-display">
-            <div id="loadingIndicator" class="loading">
-                Loading...
-            </div>
-            <div id="errorMessage" class="error">
-                Error loading data
-            </div>
             <div id="mainContent" style="display: none;">
-                <img id="mainImage" class="main-image" src="" alt="Main Image">
-                <div id="mainText" style="margin-top: 20px; font-size: 1.2rem;"></div>
+                <div class="hero-content">
+                    <div class="hero-image-container">
+                        <img id="mainImage" class="main-image" src="" alt="Hero Image">
+                        <div id="heroName" class="hero-name"></div>
+                    </div>
+                    
+                    <div class="hero-lore-container">
+                        <div class="hero-lore">
+                            <h3>Hero Lore & Background</h3>
+                            <div id="loreText" class="lore-text"></div>
+                            
+                            <div id="rolePlaystyle" class="role-playstyle"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     </div>
 
     <script>
-        // API Endpoints
-        const API_ENDPOINTS = {
-            // This endpoint returns ALL heroes
-            GET_HEROES: 'https://assets.deadlock-api.com/v2/heroes?language=english&client_version=6016&only_active=true',
-            
-            // For individual hero details, use the hero_id parameter
-            GET_HERO_DETAILS: 'https://assets.deadlock-api.com/v2/heroes?language=english&client_version=6016&hero_id='
-        };
+        const HEROES_API = 'https://assets.deadlock-api.com/v2/heroes?language=english&client_version=6016&only_active=true';
         
-        // DOM Elements
         const categorySelect = document.getElementById('categorySelect');
-        const loadingIndicator = document.getElementById('loadingIndicator');
-        const errorMessage = document.getElementById('errorMessage');
         const mainContent = document.getElementById('mainContent');
-        const mainImage = document.getElementById('mainImage'); // Fixed typo: was 'mainimage'
-        const mainText = document.getElementById('mainText');
+        const mainImage = document.getElementById('mainImage');
+        const heroName = document.getElementById('heroName');
+        const loreText = document.getElementById('loreText');
+        const rolePlaystyle = document.getElementById('rolePlaystyle');
 
-        // Fetch heroes and populate dropdown on page load
+        let allHeroesData = [];
+
         document.addEventListener('DOMContentLoaded', async () => {
             await fetchHeroes();
         });
 
-        // Event listener for dropdown selection
         categorySelect.addEventListener('change', async function() {
             const selectedHeroId = this.value;
             if (selectedHeroId) {
@@ -76,122 +213,78 @@
             }
         });
         
-        // ============================================
-        // 1. FUNCTION TO FETCH HEROES FOR DROPDOWN
-        // ============================================
         async function fetchHeroes() {
             try {
-                showLoading();
-                
-                // Make the API call
-                const response = await fetch(API_ENDPOINTS.GET_HEROES);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                
-                // Parse the API response
+                const response = await fetch(HEROES_API);
                 const data = await response.json();
+                allHeroesData = data;
                 
-                // Check the actual response structure
-                console.log('API Response:', data);
-                
-                // Clear the dropdown
                 categorySelect.innerHTML = '<option value="" disabled selected>Select a hero...</option>';
                 
-                // Populate dropdown with heroes
-                // Adjust this based on the actual API response structure
-                if (data.heroes && Array.isArray(data.heroes)) {
-                    data.heroes.forEach(hero => {
-                        const option = document.createElement('option');
-                        option.value = hero.id; // Adjust property name based on API
-                        option.textContent = hero.name; // Adjust property name based on API
-                        categorySelect.appendChild(option);
-                    });
-                } else if (Array.isArray(data)) {
-                    // If API returns array directly
-                    data.forEach(hero => {
-                        const option = document.createElement('option');
-                        option.value = hero.id || hero.hero_id;
-                        option.textContent = hero.name || hero.display_name;
-                        categorySelect.appendChild(option);
-                    });
-                } else {
-                    throw new Error('Unexpected API response format');
+                data.forEach(hero => {
+                    const option = document.createElement('option');
+                    option.value = hero.id;
+                    option.textContent = hero.name;
+                    categorySelect.appendChild(option);
+                });
+                
+                if (data.length > 0) {
+                    categorySelect.value = data[0].id;
+                    await fetchHeroDetails(data[0].id);
                 }
-                
-                hideLoading();
-                
-                // Auto-select first hero if available
-                if (categorySelect.options.length > 1) {
-                    categorySelect.value = categorySelect.options[1].value;
-                    await fetchHeroDetails(categorySelect.value);
-                }
-                
-            } catch (error) {
-                console.error('Error fetching heroes:', error);
-                showError('Failed to load heroes. Please try again.');
-            }
+            } catch (error) {}
         }
 
-        // ============================================
-        // 2. FUNCTION TO FETCH HERO DETAILS
-        // ============================================
         async function fetchHeroDetails(heroId) {
             try {
-                showLoading();
+                const hero = allHeroesData.find(h => h.id.toString() === heroId.toString());
                 
-                // Construct the API endpoint with hero ID
-                const endpoint = API_ENDPOINTS.GET_HERO_DETAILS + heroId;
-                const response = await fetch(endpoint);
+                if (!hero) return;
                 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                
-                const heroData = await response.json();
-                console.log('Hero Details:', heroData);
-                
-                // Update the display with hero data
-                // Adjust these property names based on the actual API response
-                if (heroData.heroes && heroData.heroes[0]) {
-                    const hero = heroData.heroes[0];
-                    mainImage.src = hero.top_bar_image || hero.image || '';
-                    mainText.textContent = hero.lore || hero.description || 'No description available.';
-                } else if (Array.isArray(heroData) && heroData[0]) {
-                    const hero = heroData[0];
-                    mainImage.src = hero.top_bar_image || hero.image || '';
-                    mainText.textContent = hero.lore || hero.description || 'No description available.';
-                } else {
-                    throw new Error('Hero data not found in response');
-                }
+                displayHeroLore(hero);
+            } catch (error) {}
+        }
 
-                hideLoading();
-                mainContent.style.display = 'block';
-                errorMessage.style.display = 'none';
-                
-            } catch (error) {
-                console.error('Error fetching hero details:', error);
-                showError('Failed to load hero details. Please try again.');
+        function displayHeroLore(hero) {
+            const lore = hero.description?.lore || 'No lore available for this hero.';
+            const role = hero.description?.role || '';
+            const playstyle = hero.description?.playstyle || '';
+            
+            const imageUrl = hero.images?.top_bar_image || 
+                            hero.images?.selection_image || 
+                            hero.images?.background_image || 
+                            '';
+            
+            heroName.textContent = hero.name;
+            
+            if (imageUrl) {
+                mainImage.src = imageUrl;
+                mainImage.alt = hero.name;
+            } else {
+                mainImage.src = '';
+                mainImage.alt = 'No image available';
             }
-        }
-
-        // Helper functions
-        function showLoading() {
-            loadingIndicator.style.display = 'block';
-            errorMessage.style.display = 'none';
-            mainContent.style.display = 'none';
-        }
-        
-        function hideLoading() {
-            loadingIndicator.style.display = 'none';
-        }
-        
-        function showError(message) {
-            errorMessage.textContent = message;
-            errorMessage.style.display = 'block';
-            loadingIndicator.style.display = 'none';
-            mainContent.style.display = 'none';
+            
+            loreText.innerHTML = `<p>${lore}</p>`;
+            
+            if (role || playstyle) {
+                let rolePlaystyleHTML = '';
+                
+                if (role) {
+                    rolePlaystyleHTML += `<h4>Role: ${role}</h4>`;
+                }
+                
+                if (playstyle) {
+                    rolePlaystyleHTML += `<p>${playstyle}</p>`;
+                }
+                
+                rolePlaystyle.innerHTML = rolePlaystyleHTML;
+                rolePlaystyle.style.display = 'block';
+            } else {
+                rolePlaystyle.style.display = 'none';
+            }
+            
+            mainContent.style.display = 'block';
         }
     </script>
 </body>
