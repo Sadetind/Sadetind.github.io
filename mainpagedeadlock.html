@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Deadlock Api</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
             background-image: url('deadlockbackground.png');
@@ -10,17 +11,17 @@
             background-repeat: no-repeat;
             background-attachment: fixed;
             margin: 0;
-            min-height: 100vh;
         }
         
         .title {
             color: white;
             text-align: center;
-            padding: 30px;
+            padding: 20px;
         }
         
         .title img {
-            max-width: 300px; 
+            max-width: 300px;
+            width: 80%;
             height: auto;
             display: block;
             margin: 0 auto 20px;
@@ -29,7 +30,7 @@
         .title p {
             color: rgb(97, 182, 104);
             font-size: 20px;
-            margin-bottom: 50px;
+            margin-bottom: 40px;
         }
         
         .image-links {
@@ -43,6 +44,9 @@
         .image-link {
             text-align: center;
             transition: transform 0.3s ease;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            border-radius: 10px;
         }
         
         .image-link:hover {
@@ -50,8 +54,9 @@
         }
         
         .image-link img {
-            width: 200px; 
+            width: 200px;
             height: 200px;
+            max-width: 100%;
             object-fit: cover;
             border-radius: 10px;
             border: 3px solid rgba(255, 255, 255, 0.3);
@@ -63,14 +68,6 @@
             margin-top: 10px;
             font-size: 18px;
         }
-        
-        
-        .image-link {
-            background-color: rgba(0, 0, 0, 0.4);
-            padding: 15px;
-            border-radius: 10px;
-        }
-    </style>
     </style>
 </head>
 <body>

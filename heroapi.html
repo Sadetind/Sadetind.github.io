@@ -57,6 +57,27 @@
             text-align: center;
         }
         
+        .search-bar {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .search-bar input {
+            padding: 10px; 
+            width: 100%; 
+            max-width: 400px;
+            background: #1e2a40; 
+            color: white; 
+            border: 2px solid #4a5a9a; 
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        .search-bar input::placeholder {
+            color: #9ab3ff;
+        }
+        
         label {
             font-size: 18px;
             color: #9ab3ff;
@@ -167,6 +188,13 @@
         </header>
         
         <section class="selector-section">
+            <div class="search-bar">
+                <input type="text" 
+                       id="heroSearch" 
+                       placeholder="Type hero name to search..." 
+                       oninput="handleSearch()">
+            </div>
+            
             <label for="categorySelect">Choose a Hero:</label>
             <select id="categorySelect" onchange="handleHeroSelect()">
                 <option value="" disabled selected>Loading heroes...</option>
@@ -209,6 +237,45 @@
             
             if (selectedHeroId) {
                 fetchHeroDetails(selectedHeroId);
+            }
+        }
+        function handleSearch() {
+            const searchInput = document.getElementById('heroSearch');
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const categorySelect = document.getElementById('categorySelect');
+            if (searchTerm === '') {
+                categorySelect.innerHTML = '<option value="" disabled selected>Select a hero...</option>';
+                allHeroesData.forEach(hero => {
+                    const option = document.createElement('option');
+                    option.value = hero.id;
+                    option.textContent = hero.name;
+                    categorySelect.appendChild(option);
+                });
+                return;
+            }
+            const filteredHeroes = allHeroesData.filter(hero => 
+                hero.name.toLowerCase().includes(searchTerm)
+            );
+            categorySelect.innerHTML = '<option value="" disabled selected>Select a hero...</option>';
+
+            if (filteredHeroes.length > 0) {
+                filteredHeroes.forEach(hero => {
+                    const option = document.createElement('option');
+                    option.value = hero.id;
+                    option.textContent = hero.name;
+                    categorySelect.appendChild(option);
+                });
+                categorySelect.value = filteredHeroes[0].id;
+                fetchHeroDetails(filteredHeroes[0].id);
+            } else {
+                const option = document.createElement('option');
+                option.value = "";
+                option.textContent = "No heroes found";
+                option.disabled = true;
+                option.selected = true;
+                categorySelect.appendChild(option);
+                
+                document.getElementById('mainContent').style.display = 'none';
             }
         }
         
